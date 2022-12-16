@@ -38,13 +38,11 @@ public class ArticleService {
         boolean isFake = article.getBody() != null
                 && Pattern.compile(".*gazeta\\.ru.*kommersant\\.ru.*lenta\\.ru.*interfax\\.ru")
                 .matcher(article.getBody()).find();
-
+        requestConsumer.changeFake(articleId, isFake, "/portal/news/{articleId}");
         if(!articleRepository.existsByTitle(article.getTitle())) {
             article.setFake(isFake);
             articleRepository.save(article);
         }
-
-        requestConsumer.changeFake(articleId, "/portal/news/fakes/{articleId}", isFake);
         return isFake;
     }
 }
