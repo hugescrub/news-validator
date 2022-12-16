@@ -1,7 +1,6 @@
 package net.hugescrub.newsservice.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import net.hugescrub.newsservice.dto.ArticleDto;
 import net.hugescrub.newsservice.model.Article;
 import net.hugescrub.newsservice.payload.MessageResponse;
 import net.hugescrub.newsservice.repository.ArticleRepository;
@@ -56,13 +55,11 @@ public class ValidationController {
 
 
     @PostMapping("/validate")
-    public ResponseEntity<? extends MessageResponse> validateArticle(@RequestBody ArticleDto articleDto) {
-        if(articleService.validateArticle(articleDto)) {
+    public ResponseEntity<? extends MessageResponse> validateArticle(@RequestBody Long articleId) {
+        if(articleService.validateArticle(articleId)) {
             return ResponseEntity.ok()
                     .body(new MessageResponse("The article is fake."));
         } else {
-            Long articleId = articleRepository.findByTitle(articleDto.getTitle()).getId();
-            //consumer.passData(articleId, "/api/classification/classify");
             consumer.passData(articleId, "/api/validator/classificationMock");
             return ResponseEntity.ok()
                     .body(new MessageResponse("The article is not fake."));
@@ -70,8 +67,8 @@ public class ValidationController {
     }
 
     @PostMapping("/classificationMock")
-    public ResponseEntity<? extends MessageResponse> respondWithTopic() {
-        log.warn("Classification endpoint was called at: " + LocalTime.now());
+    public ResponseEntity<? extends MessageResponse> respondWithTopic(@RequestBody Long articleId) {
+        log.warn("Classification endpoint was called at: " + LocalTime.now() + "\n with id: " + articleId);
         Map<Integer, String> topics = Map.of(
                 1, "Medicine",
                 2, "Politics",
