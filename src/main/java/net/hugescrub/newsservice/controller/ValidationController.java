@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
@@ -33,22 +32,22 @@ public class ValidationController {
         this.consumer = consumer;
     }
 
-    @GetMapping("/get/all")
+    @GetMapping("/articles")
     public List<Article> getAllArticles(){
         return articleRepository.findAll();
     }
 
-    @GetMapping(value = "/get", params = "fake")
+    @GetMapping(value = "/articles", params = "fake")
     public List<Article> getAllByFakeFlag(@RequestParam Boolean fake) {
         return articleRepository.findAllByIsFake(fake);
     }
 
-    @GetMapping(value = "/get", params = "date")
+    @GetMapping(value = "/articles", params = "date")
     public List<Article> getAllByDate(@RequestParam String date) {
         return articleRepository.findAllByCreatedBefore(LocalDateTime.parse(date));
     }
 
-    @GetMapping(value = "/get", params = "bodyPart")
+    @GetMapping(value = "/articles", params = "bodyPart")
     public List<Article> getAllByBodyPart(@RequestParam String bodyPart) {
         return articleRepository.findAllByBodyContains(bodyPart);
     }
@@ -68,7 +67,6 @@ public class ValidationController {
 
     @PostMapping("/classificationMock")
     public ResponseEntity<? extends MessageResponse> respondWithTopic(@RequestBody Long articleId) {
-        log.warn("Classification endpoint was called at: " + LocalTime.now() + "\n with id: " + articleId);
         Map<Integer, String> topics = Map.of(
                 1, "Medicine",
                 2, "Politics",
