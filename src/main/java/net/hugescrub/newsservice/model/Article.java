@@ -23,7 +23,7 @@ public class Article {
 
     @NotNull
     @NotBlank
-    @Size(min = 5, max = 30)
+    @Size(min = 5, max = 60)
     private String title;
 
     @NotNull
