@@ -12,9 +12,9 @@ import reactor.core.publisher.Mono;
 @Service
 public class RequestConsumer {
 
+    public static final String AUTH_COOKIE = "CkieUsrSessionID";
     private final String PORTAL_BASE_URL = "http://localhost:8080";
     private final String CLASSIFICATION_BASE_URL = "http://localhost:8082";
-
     private final String MOCK_CL_URL = "http://localhost:8081";
 
     public void passData(final Long articleId, final String uriPath) {
@@ -29,20 +29,22 @@ public class RequestConsumer {
         }
     }
 
-    public Mono<Article> retrieveData(final Long id, final String uriPath) {
+    public Mono<Article> retrieveData(final Long id, final String uriPath, final String authCookie) {
         if (id > 0 && uriPath != null) {
             WebClient client = WebClient.create(PORTAL_BASE_URL);
+
             return client.get()
                     .uri(uriBuilder -> uriBuilder
                             .path(uriPath)
                             .build(id))
+                    .cookie(AUTH_COOKIE, authCookie)
                     .retrieve()
                     .bodyToMono(Article.class);
         } else
             throw new IllegalArgumentException("Article id < 1 or wrong uri provided.");
     }
 
-    public void changeFake(final Long articleId, final Boolean isFake, final String uriPath) {
+    public void changeFake(final Long articleId, final Boolean isFake, final String uriPath, final String authCookie) {
         if (articleId > 0 && uriPath != null) {
             // declare empty request body
             PatchArticleRequest request = new PatchArticleRequest();
@@ -55,6 +57,7 @@ public class RequestConsumer {
                             .path("/portal/news/{articleId}")
                             .build(articleId))
                     .body(BodyInserters.fromValue(request))
+                    .cookie(AUTH_COOKIE, authCookie)
                     .retrieve()
                     .bodyToMono(String.class)
                     .subscribe(System.out::println);
