@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -54,8 +55,8 @@ public class ValidationController {
 
 
     @PostMapping("/validate")
-    public ResponseEntity<? extends MessageResponse> validateArticle(@RequestBody Long articleId) {
-        if(articleService.validateArticle(articleId)) {
+    public ResponseEntity<? extends MessageResponse> validateArticle(@RequestBody Long articleId, HttpServletRequest request) {
+        if(articleService.validateArticle(articleId, request)) {
             return ResponseEntity.ok()
                     .body(new MessageResponse("The article is fake."));
         } else {
