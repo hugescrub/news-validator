@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -32,18 +35,22 @@ public class ArticleService {
     // e.g. if article is fake return true, if not return false
     @Transactional
     public boolean validateArticle(Long articleId, HttpServletRequest request) {
-        String authCookie = request.getHeader(RequestConsumer.AUTH_COOKIE);
+        Map<String, String> requestCookies = new HashMap<>();
+        Arrays.stream(request.getCookies())
+                .forEach(cookie -> requestCookies.put(cookie.getName(), cookie.getValue()));
+
+        String authCookie = requestCookies.get(RequestConsumer.AUTH_COOKIE);
+        String sessionCookie = requestCookies.get("JSESSIONID");
 
         Article article = Objects.requireNonNull(
-                requestConsumer.retrieveData(articleId, "/portal/news/{id}", authCookie)
-                        .block()
+                requestConsumer.retrieveData(articleId, "/portal/news/{id}", authCookie, sessionCookie)
         );
 
         boolean isFake = article.getBody() != null
                 && Pattern.compile(".*gazeta\\.ru.*kommersant\\.ru.*lenta\\.ru.*interfax\\.ru")
                 .matcher(article.getBody()).find();
 
-        requestConsumer.changeFake(articleId, isFake, "/portal/news/{articleId}", authCookie);
+        requestConsumer.changeFake(articleId, isFake, "/portal/news/{articleId}", authCookie, sessionCookie);
         if(!articleRepository.existsByTitle(article.getTitle())) {
             article.setFake(isFake);
             articleRepository.save(article);
