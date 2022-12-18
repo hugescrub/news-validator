@@ -16,15 +16,14 @@ public class RequestConsumer {
 
     public static final String AUTH_COOKIE = "CkieUsrSessionID";
     private final String PORTAL_BASE_URL = "http://localhost:8080";
-    private final String CLASSIFICATION_BASE_URL = "http://localhost:8082";
-    private final String MOCK_CL_URL = "http://localhost:8081";
+    private final String CLASSIFICATION_BASE_URL = "http://localhost:8081";
 
-    public void passData(final Long articleId, final String uriPath) {
-        if (articleId > 0 && uriPath != null) {
-            WebClient client = WebClient.create(MOCK_CL_URL); // TODO change to actual url
+    public void passData(final Long uuid, final String uriPath) {
+        if (uuid > 0 && uriPath != null) {
+            WebClient client = WebClient.create(CLASSIFICATION_BASE_URL); // TODO change to actual url
             client.post()
-                    .uri(uriPath)
-                    .bodyValue(articleId)
+                    .uri(uriPath + "?uuid=" + uuid)
+                    .bodyValue(uuid)
                     .retrieve()
                     .bodyToMono(String.class)
                     .subscribe(System.out::println);

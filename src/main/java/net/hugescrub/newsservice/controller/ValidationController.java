@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -60,21 +59,9 @@ public class ValidationController {
             return ResponseEntity.ok()
                     .body(new MessageResponse("The article is fake."));
         } else {
-            consumer.passData(articleId, "/api/validator/classificationMock");
+            consumer.passData(articleId, "/classify");
             return ResponseEntity.ok()
                     .body(new MessageResponse("The article is not fake."));
         }
-    }
-
-    @PostMapping("/classificationMock")
-    public ResponseEntity<? extends MessageResponse> respondWithTopic(@RequestBody Long articleId) {
-        Map<Integer, String> topics = Map.of(
-                1, "Medicine",
-                2, "Politics",
-                3, "Sports",
-                4, "Science"
-        );
-        return ResponseEntity.ok()
-                .body(new MessageResponse(topics.get((int) (Math.random() * 4))));
     }
 }
