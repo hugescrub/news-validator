@@ -51,7 +51,7 @@ public class ArticleService {
                 .matcher(article.getBody()).find();
 
         requestConsumer.changeFake(articleId, isFake, "/portal/news/{articleId}", authCookie, sessionCookie);
-        if(!articleRepository.existsByTitle(article.getTitle())) {
+        if (!articleRepository.existsByTitle(article.getTitle())) {
             article.setFake(isFake);
             articleRepository.save(article);
         }
